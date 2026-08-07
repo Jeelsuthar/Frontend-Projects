@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FraudShield Gujarat 3D -- Official</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Added Lucide Icons for Premium Vector Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <header>
+    <div class="container">
+      <div class="logo-section">
+        <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle Main Navigation">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <!-- Premium Shield Icon -->
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ondblclick="openAdmin()">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v4"></path>
+          <path d="M12 16h.01"></path>
+        </svg>
+        <h1 id="nav-title" style="margin:0; font-size: 18px; color: var(--primary);">FraudShield</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <svg class="icon" style="color: var(--primary);" viewBox="0 0 24 24"><path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+          <option value="en" selected>English</option>
+          <option value="gu">ગુજરાતી</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-container" id="mobileMenu">
+    <div class="tab-list">
+      <button class="tab active" data-lang="t1" onclick="showTab(this, 'checker')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Checker
+      </button>
+      <button class="tab" data-lang="t2" onclick="showTab(this, 'tips')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Media Tips
+      </button>
+      <button class="tab" data-lang="t3" onclick="showTab(this, 'map')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg> Heatmap
+      </button>
+      <button class="tab" data-lang="t4" onclick="showTab(this, 'report')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Report
+      </button>
+      <button class="tab" data-lang="t5" onclick="showTab(this, 'chat')">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> AI Bot
+      </button>
+    </div>
+  </nav>
+
+  <main onclick="closeMenu()">
+    <section id="checker" class="tab-panel active-panel" style="opacity: 1; transform: translateY(0);">
+      <div class="grid">
+        <div class="card">
+          <h2 data-lang="c_h2" style="display: flex; align-items: center;">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Scam Search
+          </h2>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 20px; color: #888;" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <input type="text" id="mainInput" data-ph="p_target" placeholder="Number or link" style="padding-left: 40px;">
+          </div>
+          <button class="btn-primary" data-lang="b1" onclick="runCheck()">
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> Verify Safety
+          </button>
+          <div id="checkResult" style="margin-top:15px; font-weight: 700;"></div>
+        </div>
+        <div class="card" style="background: var(--primary); color: white;">
+          <h3 data-lang="w_h3" style="display: flex; align-items: center;">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Stay Alert!
+          </h3>
+          <p data-lang="w_p">Never share your OTP or Bank Details.</p>
+        </div>
+        
+        <!-- Premium Advertising Poster -->
+        <div class="card premium-poster" id="adPoster" style="padding: 0; border-radius: var(--radius); overflow: hidden;">
+          <img src="Assets/Img/AD/Ad!.png" alt="Cyber Awareness" style="width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; transform: translateZ(40px);" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'padding: 30px; text-align: center;\'><h4 style=\'color:#f57c00\'>AWARENESS</h4><h2 style=\'color:#0b4f8a; font-size:20px;\'>CYBER SECURITY MATTERS</h2><p>Stay updated with the latest digital safety trends.</p></div>';">
+        </div>
+        
+      </div>
+    </section>
+
+<section id="tips" class="tab-panel">
+  <div class="youtube-container">
+    <div class="main-player">
+      <video id="mainVid" controls autoplay muted loop>
+        <source src="https://res.cloudinary.com/dgt2qa9fm/video/upload/v1786126908/1_psn0r2.mp4" type="video/mp4">
+      </video>
+      <div class="video-description">
+        <h3 id="mainTitle" data-lang="v1" style="display: flex; align-items: center;">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Digital Arrest Scam
+        </h3>
+        <p style="font-size: 14px; color: #666;"> FraudShield India • 2026</p>
+      </div>
+    </div>
+
+    <div class="video-list">
+      <div class="side-item" onclick="changeMainVid('Digital Arrest Scam')">
+        <img src="Assets/Img/Thumbline/1.png" alt="Digital Arrest Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4 data-lang="v1">Digital Arrest Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Lottery Scam')">
+        <img src="Assets/Img/Thumbline/2.png" alt="Lottery Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Lottery Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Investment Scam')">
+        <img src="Assets/Img/Thumbline/3.png" alt="Investment Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Investment Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Kyc Scam')">
+        <img src="Assets/Img/Thumbline/4.png" alt="Kyc Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Kyc Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('UPI PIN Scam')">
+        <img src="Assets/Img/Thumbline/5.png" alt="UPI PIN Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>UPI PIN Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('QR Code Scam')">
+        <img src="Assets/Img/Thumbline/6.png" alt="QR Code Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>QR Code Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Bank Account Block Scam')">
+        <img src="Assets/Img/Thumbline/7.png" alt="Bank Account Block Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Bank Account Block Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Fake link Scam')">
+        <img src="Assets/Img/Thumbline/8.png" alt="Fake link Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Fake link Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Fake Investment App Scam')">
+        <img src="Assets/Img/Thumbline/9.png" alt="Fake Investment App Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Fake Investment App Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Cyber Awareness')">
+        <img src="Assets/Img/Thumbline/10.png" alt="Cyber Awareness" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Cyber Awareness</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Free Tips Scam')">
+        <img src="Assets/Img/Thumbline/11.png" alt="Free Tips Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Free Tips Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('OTP Scam')">
+        <img src="Assets/Img/Thumbline/12.png" alt="OTP Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>OTP Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+
+      <div class="side-item" onclick="changeMainVid('Creadit Card Scam')">
+        <img src="Assets/Img/Thumbline/13.png" alt="Creadit Card Scam" onerror="this.src='https://via.placeholder.com/160x90.png?text=Thumbnail'">
+        <div class="side-info">
+          <h4>Creadit Card Scam</h4>
+          <p>FraudShield India</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <section id="map" class="tab-panel">
+      <div class="card">
+        <h3 data-lang="t3" style="display: flex; align-items: center;">
+          <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg> Fraud Heatmap
+        </h3>
+        <div id="gujaratMap"></div>
+      </div>
+    </section>
+
+    <section id="report" class="tab-panel">
+      <div class="grid">
+        <div class="card">
+          <h3 data-lang="r_h3">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Submit New Report
+          </h3>
+          <label data-lang="l_name">User Name</label>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 12px; color: #888;" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <input type="text" id="uName" data-ph="p_name" placeholder="Enter name" style="padding-left: 40px;">
+          </div>
+          
+          <label data-lang="l_email">Email ID</label>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 12px; color: #888;" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input type="email" id="uEmail" data-ph="p_email" placeholder="Enter email" style="padding-left: 40px;">
+          </div>
+          
+          <label data-lang="l_target">Fraud Number/Link</label>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 12px; color: #888;" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <input type="text" id="fTarget" data-ph="p_target" placeholder="Number or link" style="padding-left: 40px;">
+          </div>
+          
+          <label data-lang="l_type">Fraud Type</label>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 12px; color: #888; z-index: 1;" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <select id="fType" style="padding-left: 40px; position: relative;">
+              <option value="" data-lang="opt_def">Select Type</option>
+              <option value="UPI Scam">UPI Scam</option>
+              <option value="Fake Call">Fake Call</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <label data-lang="l_loc">Location</label>
+          <div style="position: relative;">
+            <svg class="icon" style="position: absolute; left: 12px; top: 12px; color: #888; z-index: 1;" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <select id="fLocation" style="padding-left: 40px; position: relative;">
+              <option value="">Select City</option>
+              <option>Ahmedabad</option>
+              <option>Surat</option>
+              <option>Rajkot</option>
+              <option>Vadodara</option>
+              <option>Mumbai</option>
+              <option>Delhi</option>
+              <option>Bangalore</option>
+              <option>Hyderabad</option>
+              <option>Chennai</option>
+              <option>Kolkata</option>
+              <option>Pune</option>
+              <option>Jaipur</option>
+            </select>
+          </div>
+          
+          <label data-lang="l_desc">Description</label>
+          <textarea id="fDesc" rows="4" data-ph="p_desc" placeholder="Details..."></textarea>
+          
+          <button class="btn-primary" data-lang="r_btn" onclick="submitReport()">
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg> Submit Report
+          </button>
+        </div>
+
+        <div class="card">
+          <h3 data-lang="r_list">
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg> Recent Reports
+          </h3>
+          <div id="reportList"><p id="emptyMsg" data-lang="no_rep">No reports yet.</p></div>
+        </div>
+      </div>
+      <div id="adminSection" class="card" style="margin-top: 30px; border: 2px dashed #0b4f8a; background: #f0f7ff; display: none;">
+        <h3 style="color: #0b4f8a;">🛠 Developer Control Panel</h3>
+        <div id="adminQueue"></div>
+      </div>
+    </section>
+
+<section id="chat" class="tab-panel">
+  <div class="card" style="max-width:600px;margin:auto;height:520px;display:flex;flex-direction:column; position: relative;">
+    
+    <div class="ai-header">
+      <h3 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+        <svg class="icon icon-lg" style="color: var(--primary);" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        FraudShield AI
+      </h3>
+      <div id="aiStatus" class="ai-status-indicator">
+        <div class="ai-dot"></div>
+        <span id="aiStatusText">Ready</span>
+      </div>
+    </div>
+
+    <!-- Language -->
+    <div style="display: flex; gap: 8px; margin-bottom: 15px; align-items: center;">
+      <svg class="icon" style="color: #888;" viewBox="0 0 24 24"><path d="M3 21v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <select id="langSelectBot" onchange="changeLang(this.value)" style="margin:0; padding: 6px 10px; width: auto; font-size: 13px;">
+        <option value="en">English</option>
+        <option value="gu">Gujarati</option>
+        <option value="hi">Hindi</option>
+      </select>
+    </div>
+
+    <!-- Chat -->
+    <div id="chatBox" style="flex:1;overflow-y:auto;background:#f9f9f9;padding:15px;border-radius:10px; border: 1px solid #eee;"></div>
+
+    <!-- Options -->
+    <div id="quickOptions" style="display:flex;gap:8px;flex-wrap:wrap;margin:15px 0;"></div>
+
+    <!-- Input -->
+    <div style="position: relative; margin-top: auto;">
+      <input type="text" id="chatInput" placeholder="Type a message..." style="margin:0; padding-right: 45px;" />
+      <button onclick="sendMsg()" style="position: absolute; right: 8px; top: 8px; background: none; border: none; cursor: pointer; color: var(--primary);" aria-label="Send message">
+        <svg class="icon" style="margin: 0;" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+
+  </div>
+</section>
+  </main>
+
+  <!-- PROJECT INFO TRIGGER SECTION -->
+  <section class="pi-trigger-section pi-3d-tilt">
+    <div class="pi-banner" onclick="openProjectInfo()">
+      <div class="pi-banner-content">
+        <div class="pi-banner-subtitle">Silver Oak University — PBL-II Project</div>
+        <h2 class="pi-banner-title">PROJECT INFO</h2>
+        <button class="pi-btn-explore">
+          <i data-lucide="layers"></i> EXPLORE PROJECT DATA
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FULLSCREEN MODAL FOR REAL PROJECT INFO -->
+  <div id="pi-modal" class="pi-modal-overlay">
+    <div class="pi-modal-header">
+      <div class="pi-modal-title">
+        <i data-lucide="shield-check" size="26"></i> FraudShield Documentation
+      </div>
+      <div class="pi-header-actions">
+        <!-- New Menu Toggle Icon for Small Devices in Explore Project Section -->
+        <button class="pi-mobile-toggle-btn" id="pi-mobile-menu-toggle" onclick="togglePiMobileMenu()" aria-label="Toggle Project Menu">
+          <i data-lucide="menu" size="18"></i> Menu
+        </button>
+        <button class="pi-close-btn" onclick="closeProjectInfo()" aria-label="Close Project Modal">
+          <i data-lucide="x" size="22"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="pi-layout">
+      <!-- 3D Sidebar Navigation -->
+      <nav class="pi-sidebar" id="pi-sidebar-nav">
+        <div class="pi-nav-card pi-active-nav pi-3d-tilt" onclick="openPiTab('pi-overview', this)">
+          <i data-lucide="layout-dashboard"></i>
+          <div>
+            <div class="pi-nav-number">01</div>
+            <div>Project Overview</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-developers', this)">
+          <i data-lucide="users"></i>
+          <div>
+            <div class="pi-nav-number">02</div>
+            <div>Developers & Guide</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-ppt', this)">
+          <i data-lucide="presentation"></i>
+          <div>
+            <div class="pi-nav-number">03</div>
+            <div>Presentation Deck</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-research', this)">
+          <i data-lucide="file-text"></i>
+          <div>
+            <div class="pi-nav-number">04</div>
+            <div>Research Papers (1-5)</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-report', this)">
+          <i data-lucide="book-open"></i>
+          <div>
+            <div class="pi-nav-number">05</div>
+            <div>PBL-II Project Report</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-tech', this)">
+          <i data-lucide="code"></i>
+          <div>
+            <div class="pi-nav-number">06</div>
+            <div>System Specs & Architecture</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-timeline', this)">
+          <i data-lucide="calendar"></i>
+          <div>
+            <div class="pi-nav-number">07</div>
+            <div>Timeline & Roadmap</div>
+          </div>
+        </div>
+        <div class="pi-nav-card pi-3d-tilt" onclick="openPiTab('pi-ai-demo', this)">
+          <i data-lucide="bot"></i>
+          <div>
+            <div class="pi-nav-number">08</div>
+            <div>AI Detection Visualizer</div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Content Area with REAL Document Data -->
+      <div class="pi-content-area">
+        
+        <!-- 01 Overview -->
+        <div id="pi-overview" class="pi-tab-panel pi-active-tab">
+          <h2 class="pi-section-title"><i data-lucide="layout-dashboard"></i> Project Abstract & Summary</h2>
+          <p class="pi-text"><strong>FraudShield</strong> is a two-in-one platform combining cyber fraud detection with public education, developed under the Problem Based Learning (PBL-II) curriculum at Silver Oak University, Department of Information Technology[cite: 6, 7].</p>
+          <p class="pi-text">In Gujarat, cities like Ahmedabad, Surat, and Rajkot have experienced a sharp rise in digital financial frauds (over 11,000 cases in 2025 and 200+ daily complaints to Helpline 1930)[cite: 2, 3, 7]. FraudShield enables citizens to verify suspicious phone numbers/links, view city-wise heatmaps, receive real-time scam alerts, and engage with Gujarati/Hindi educational content to contribute toward the vision of <em>Viksit Bharat 2047</em>[cite: 6, 7].</p>
+          
+          <div class="pi-grid-3" style="margin-top: 20px;">
+            <div class="pi-info-card pi-3d-tilt">
+              <i data-lucide="target" size="28"></i>
+              <h4>Primary Purpose</h4>
+              <p>Prevent citizens from falling victim to online financial fraud through early threat detection, real-time alert feeds, and accessible regional awareness tools[cite: 6, 7].</p>
+            </div>
+            <div class="pi-info-card pi-3d-tilt">
+              <i data-lucide="shield-alert" size="28"></i>
+              <h4>Key Problem</h4>
+              <p>Traditional awareness (posters/pamphlets) lacks interactive engagement[cite: 1]. Vulnerable groups like senior citizens and small business owners are repeatedly exploited via urgency-driven calls[cite: 3, 5].</p>
+            </div>
+            <div class="pi-info-card pi-3d-tilt">
+              <i data-lucide="award" size="28"></i>
+              <h4>Academic Affiliation</h4>
+              <p>Aditya Silver Oak Institute of Technology, Silver Oak University, Ahmedabad (Academic Year 2024-2025)[cite: 6, 7].</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 Developers -->
+        <div id="pi-developers" class="pi-tab-panel">
+          <h2 class="pi-section-title"><i data-lucide="users"></i> Project Team & Faculty Guide</h2>
+          <p class="pi-text">Project developed by 6th Semester B.Tech Information Technology students under expert faculty guidance[cite: 6, 7]:</p>
+          
+          <div style="background: rgba(11, 79, 138, 0.05); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--primary); font-size: 13px;">
+            <strong style="color: var(--primary);">Project Supervisor / Guide:</strong> Prof. Ms. Bhumi Trivedi[cite: 6, 7]<br>
+            <strong style="color: var(--primary);">Head of Department (IT):</strong> Dr. Vikas Tulshyan[cite: 6]
+          </div>
+
+          <div class="pi-dev-grid">
+            <div class="pi-dev-card pi-3d-tilt">
+              <div class="pi-dev-img-container">
+                <img  class="pi-dev-img" >
+              </div>
+              <div class="pi-dev-name">Suthar Zeel</div>
+              <div class="pi-dev-role">Enrollment: 2302031000107</div>
+              <div class="pi-dev-bio">B.Tech Information Technology, Silver Oak University[cite: 6, 7].</div>
+              <div class="pi-socials"><i data-lucide="github"></i><i data-lucide="linkedin"></i><i data-lucide="mail"></i></div>
+            </div>
+
+            <div class="pi-dev-card pi-3d-tilt">
+              <div class="pi-dev-img-container">
+                <img  class="pi-dev-img" >
+              </div>
+              <div class="pi-dev-name">Gajera Harshil</div>
+              <div class="pi-dev-role">Enrollment: 2302031000021</div>
+              <div class="pi-dev-bio">B.Tech Information Technology, Silver Oak University[cite: 6, 7].</div>
+              <div class="pi-socials"><i data-lucide="github"></i><i data-lucide="linkedin"></i><i data-lucide="mail"></i></div>
+            </div>
+
+            <div class="pi-dev-card pi-3d-tilt">
+              <div class="pi-dev-img-container">
+                <img class="pi-dev-img" >
+              </div>
+              <div class="pi-dev-name">Koshiya Smit</div>
+              <div class="pi-dev-role">Enrollment: 2302031000036</div>
+              <div class="pi-dev-bio">B.Tech Information Technology, Silver Oak University[cite: 6, 7].</div>
+              <div class="pi-socials"><i data-lucide="github"></i><i data-lucide="linkedin"></i><i data-lucide="mail"></i></div>
+            </div>
+
+            <div class="pi-dev-card pi-3d-tilt">
+              <div class="pi-dev-img-container">
+                <img  class="pi-dev-img" >
+              </div>
+              <div class="pi-dev-name">Parmar Jaydeep</div>
+              <div class="pi-dev-role">Enrollment: 2302031000055</div>
+              <div class="pi-dev-bio">B.Tech Information Technology, Silver Oak University[cite: 6, 7].</div>
+              <div class="pi-socials"><i data-lucide="github"></i><i data-lucide="linkedin"></i><i data-lucide="mail"></i></div>
+            </div>
+
+            <div class="pi-dev-card pi-3d-tilt">
+              <div class="pi-dev-img-container">
+                <img  class="pi-dev-img" >
+              </div>
+              <div class="pi-dev-name">Rathod Ravirajsinh</div>
+              <div class="pi-dev-role">Enrollment: 2302031000092</div>
+              <div class="pi-dev-bio">B.Tech Information Technology, Silver Oak University[cite: 6, 7].</div>
+              <div class="pi-socials"><i data-lucide="github"></i><i data-lucide="linkedin"></i><i data-lucide="mail"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 003 PPT Section -->
+         <div id="pi-ppt" class="pi-tab-panel">
+         <h2 class="pi-section-title"><i data-lucide="presentation"></i> Official PBL Presentation Slides</h2>
+         <p class="pi-text">Slide-by-slide presentation deck used during university evaluations:</p>
+  
+         <!-- Embedded PDF Viewer using your local relative path -->
+        <div class="pi-ppt-viewer pi-3d-tilt" style="height: 500px; padding: 0;">
+         <embed 
+           src="Assets/PPT/PBL-II_PPT.pdf" 
+           type="application/pdf" 
+           width="100%" 
+           height="100%" 
+           style="border-radius: 12px;" 
+           />
+        </div>
+
+         <!-- Download / Open Button -->
+        <div class="pi-ppt-controls" style="margin-top: 15px;">
+          <button class="pi-ppt-btn" onclick="window.open('Assets/PPT/PBL-II_PPT.pdf', '_blank')">
+             <i data-lucide="external-link" size="14"></i> Open Fullscreen / Download PDF
+         </button>
+        </div>
+      </div>
+
+        <!-- 04 Research Papers -->
+        <div id="pi-research" class="pi-tab-panel">
+          <h2 class="pi-section-title"><i data-lucide="file-text"></i> Integrated Research Studies (Gujarat Region)</h2>
+          <p class="pi-text">Summaries of five specialized research papers underpinning FraudShield's domain logic[cite: 1, 2, 3, 4, 5]:</p>
+
+          <div class="pi-doc-viewer pi-3d-tilt">
+            <div class="pi-doc-header">
+              <div class="pi-doc-meta">Research Paper 1 • NCRB Trend Analysis[cite: 2]</div>
+              <h3 class="pi-doc-title">Rise in Digital Financial Frauds in Gujarat (2021-2024): An Analysis of NCRB Trends Post-COVID-19</h3>
+            </div>
+            <div class="pi-doc-abstract">
+              <strong>Abstract:</strong> Analyzes the post-pandemic surge in financial cybercrime across Ahmedabad, Surat, and Rajkot[cite: 2]. Highlights how rapid post-COVID UPI adoption led to increased vulnerability to fake KYC and phishing, with Helpline 1930 receiving 200+ daily complaints[cite: 2].
+            </div>
+          </div>
+
+          <div class="pi-doc-viewer pi-3d-tilt">
+            <div class="pi-doc-header">
+              <div class="pi-doc-meta">Research Paper 2 • Scam Patterns[cite: 3]</div>
+              <h3 class="pi-doc-title">Analyzing Scam Patterns in Ahmedabad: Urgent Calls and SMS Messages in Financial Fraud</h3>
+            </div>
+            <div class="pi-doc-abstract">
+              <strong>Abstract:</strong> Investigates tactics reported by the Cyber Crime Cell of Ahmedabad, focusing on manipulation of urgency (urgent KYC suspensions, instant fake loans, phishing URLs) that exploit victim fear[cite: 3].
+            </div>
+          </div>
+
+          <div class="pi-doc-viewer pi-3d-tilt">
+            <div class="pi-doc-header">
+              <div class="pi-doc-meta">Research Paper 3 • Helpline Data[cite: 4]</div>
+              <h3 class="pi-doc-title">High Volume of Online Financial Fraud Complaints in Gujarat: Helpline 1930 Analysis</h3>
+            </div>
+            <div class="pi-doc-abstract">
+              <strong>Abstract:</strong> Evaluates over 73,000 complaints recorded in 2023 alone across urban and rural Gujarat, identifying significant underreporting, investigation backlogs, and the need for region-specific tools[cite: 4].
+            </div>
+          </div>
+
+          <div class="pi-doc-viewer pi-3d-tilt">
+            <div class="pi-doc-header">
+              <div class="pi-doc-meta">Research Paper 4 • Demographics[cite: 5]</div>
+              <h3 class="pi-doc-title">Digital Illiteracy and Fraud: Victimization among Elderly Citizens & Small Business Owners</h3>
+            </div>
+            <div class="pi-doc-abstract">
+              <strong>Abstract:</strong> Probes why 70%+ of elderly citizens and small shopkeepers in Tier-2/3 Gujarat fail to distinguish genuine SMS from phishing links, highlighting emotional stress and retirement fund losses[cite: 5].
+            </div>
+          </div>
+
+          <div class="pi-doc-viewer pi-3d-tilt">
+            <div class="pi-doc-header">
+              <div class="pi-doc-meta">Research Paper 5 • Interactive Tools[cite: 1]</div>
+              <h3 class="pi-doc-title">From Posters to Protection: Need for Interactive Fraud Awareness Tools in Gujarat</h3>
+            </div>
+            <div class="pi-doc-abstract">
+              <strong>Abstract:</strong> Demonstrates the failure of static pamphlets/posters and outlines the FraudShield framework: gamified quizzes, regional Gujarati videos, real-time alerts, and scam verification[cite: 1].
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 Project Report -->
+<div id="pi-report" class="pi-tab-panel">
+  <h2 class="pi-section-title"><i data-lucide="book-open"></i> PBL-II Complete Project Report</h2>
+  <p class="pi-text">Detailed breakdown from the Silver Oak University project report documentation:</p>
+
+  <div class="pi-grid-3">
+    <div class="pi-info-card pi-3d-tilt">
+      <i data-lucide="file-search" size="24"></i>
+      <h4>Chapter 1: Introduction</h4>
+      <p>Covers post-pandemic statistics, project summary, scope, and objectives for Digital India's cyber safety mission.</p>
+    </div>
+    <div class="pi-info-card pi-3d-tilt">
+      <i data-lucide="settings" size="24"></i>
+      <h4>Chapter 2: Requirements</h4>
+      <p>User characteristics, hardware requirements (Dual Core, 2GB RAM), software stack, and environment constraints.</p>
+    </div>
+    <div class="pi-info-card pi-3d-tilt">
+      <i data-lucide="activity" size="24"></i>
+      <h4>Chapter 3: System Analysis</h4>
+      <p>Feasibility study (Technical, Economic, Operational) and 7 core modules including Admin Panel & Chatbot.</p>
+    </div>
+    <div class="pi-info-card pi-3d-tilt">
+      <i data-lucide="slash" size="24"></i>
+      <h4>Chapter 4: Limitations</h4>
+      <p>Initial dataset size, manual verification phase, internet dependence, and regional focus on Gujarat.</p>
+    </div>
+    <div class="pi-info-card pi-3d-tilt">
+      <i data-lucide="clock" size="24"></i>
+      <h4>Chapter 5: Timeline</h4>
+      <p>7-month Gantt chart execution plan from data collection to pilot deployment in Ahmedabad & Surat.</p>
+    </div>
+
+    <!-- FIXED REPORT DOWNLOAD CARD -->
+    <div class="pi-info-card pi-3d-tilt" style="align-items: center; justify-content: center; background: rgba(11, 79, 138, 0.05); cursor: pointer; border: 2px dashed #0b4f8a;" onclick="window.open('Assets/Report/PBL-II REPORT.pdf', '_blank')">
+      <i data-lucide="download-cloud" size="28" style="color: var(--primary); margin-bottom: 8px;"></i>
+      <button class="pi-ppt-btn" style="pointer-events: none;">
+        <i data-lucide="external-link" size="14"></i> View / Download PDF
+      </button>
+    </div>
+  </div>
+</div>
+
+        <!-- 06 Technologies -->
+        <div id="pi-tech" class="pi-tab-panel">
+          <h2 class="pi-section-title"><i data-lucide="code"></i> Hardware & Software Requirements</h2>
+          <div class="pi-grid-3">
+            <div class="pi-info-card pi-3d-tilt">
+              <h4 style="color: var(--primary);">Frontend</h4>
+              <p>HTML5, CSS3 Glassmorphism, JavaScript ES6, GSAP Animation Engine, Lucide Vector Icons[cite: 6, 7].</p>
+            </div>
+            <div class="pi-info-card pi-3d-tilt">
+              <h4 style="color: var(--primary);">Mapping API</h4>
+              <p>Leaflet.js & OpenStreetMap tile engine for plotting spatial heatmap markers across Gujarat cities[cite: 6, 7].</p>
+            </div>
+            <div class="pi-info-card pi-3d-tilt">
+              <h4 style="color: var(--primary);">Data Architecture</h4>
+              <p>ScamDB, Reports Queue, Heatmaps Schema, User Roles, and Chatbot Query Logs[cite: 6, 7].</p>
+            </div>
+            <div class="pi-info-card pi-3d-tilt">
+              <h4 style="color: var(--primary);">Hardware Specs</h4>
+              <p>Dual Core Processor, 2GB RAM Minimum, 4G/Wi-Fi connection, Mobile & Desktop Responsive[cite: 6].</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 07 Timeline -->
+        <div id="pi-timeline" class="pi-tab-panel">
+          <h2 class="pi-section-title"><i data-lucide="calendar"></i> Development Timeline & Future Scope</h2>
+          <div class="pi-timeline-list">
+            <div class="pi-timeline-item">
+              <div class="pi-timeline-badge">Months 1-2</div>
+              <div class="pi-timeline-title">Data Collection & Analysis</div>
+              <div class="pi-timeline-desc">Collected 500+ fraud numbers and 300+ scam message templates from Gujarat cybercrime reports[cite: 7].</div>
+            </div>
+            <div class="pi-timeline-item">
+              <div class="pi-timeline-badge">Month 3</div>
+              <div class="pi-timeline-title">Detection Platform Development</div>
+              <div class="pi-timeline-desc">Database setup, initial matching logic, wireframing, and prototype creation[cite: 6, 7].</div>
+            </div>
+            <div class="pi-timeline-item">
+              <div class="pi-timeline-badge">Month 4</div>
+              <div class="pi-timeline-title">Multimedia Regional Content</div>
+              <div class="pi-timeline-desc">Created awareness videos, Gujarati scripts, and interactive quiz modules[cite: 7].</div>
+            </div>
+            <div class="pi-timeline-item">
+              <div class="pi-timeline-badge">Month 5</div>
+              <div class="pi-timeline-title">Pilot Testing</div>
+              <div class="pi-timeline-desc">Field pilot testing in Ahmedabad and Surat, collecting user feedback[cite: 7].</div>
+            </div>
+            <div class="pi-timeline-item">
+              <div class="pi-timeline-badge">Months 6-7 & Future</div>
+              <div class="pi-timeline-title">Launch & Android App Expansion</div>
+              <div class="pi-timeline-desc">Developing native Android/iOS apps, Gujarati NLP models, voice alerts, and telecom integration[cite: 6, 7].</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 08 AI Demo -->
+        <div id="pi-ai-demo" class="pi-tab-panel">
+          <h2 class="pi-section-title"><i data-lucide="bot"></i> AI Engine Simulation</h2>
+          <p class="pi-text">Visual representation of the string-matching and threat state analysis engine inside FraudShield[cite: 6, 7].</p>
+          
+          <div class="pi-ai-container pi-3d-tilt">
+            <div class="pi-ai-grid-bg"></div>
+            <div class="pi-ai-orb" id="pi-ai-demo-orb">
+              <i data-lucide="cpu" size="36" style="color: #fff; opacity: 0.9;"></i>
+            </div>
+            <div class="pi-ai-status-text" id="pi-ai-demo-status">SYSTEM READY</div>
+            <div class="pi-ai-desc" id="pi-ai-demo-desc">Ready to evaluate phone numbers or messages against known fraud patterns[cite: 6, 7].</div>
+            <button class="pi-ai-demo-btn" onclick="runPiAiSimulation()">Simulate Detection</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="Script.js"></script>
+</body>
+</html>
